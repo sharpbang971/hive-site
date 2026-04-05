@@ -2,6 +2,7 @@ baseURL = 'https://hive.apache.org'
 languageCode = 'en-us'
 title = 'Hive Site'
 theme = 'hive'
+timezone = "Asia/Shanghai"
 
 # Site version for cache busting
 [params]

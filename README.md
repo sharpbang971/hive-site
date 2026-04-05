@@ -68,6 +68,25 @@ Press Ctrl+C to stop
 ### Pushing to site
 Commit and push the changes to the main branch. The site is automatically deployed from the site directory.
 
+# Fix
+
+### Hugo 的时区处理机制导致的”时差”问题
+
+#### 方案一：强制开启“未来日期渲染”（最快解决）
+
+在启动命令中加入 `-F` 参数（`F` 代表 `Future`）：
+
+```bash
+hugo server -D -F
+```
+
+#### 方案二：**在配置文件里全局定调**
+
+如果你不想每个文件都写那么长，在你的 `hugo.toml` (或 `config.toml`) 里加上这一行，让 Hugo 默认跟着你的系统时区走：
+
+```bash
+timezone = "Asia/Shanghai"
+```
 
 [hugo]: https://gohugo.io/getting-started/quick-start/
 [hugo-install]: https://gohugo.io/installation/

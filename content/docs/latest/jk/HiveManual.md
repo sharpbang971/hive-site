@@ -7,12 +7,15 @@ date: 2026-04-03
 ## 
 | Hadoop      | TEZ          | Hive        | JDK  |
 | :---------- | :----------- | :---------- | :--- |
+| 3.1.0       | 0.9.1        | 3.1.3       |      |
 | 2.7.2       | 0.9.2        |             |      |
 | 3.3.1       | 0.10.2       |             |      |
-| 3.3.6       | 0.10.4       | 3.1.3？？   |      |
+| 3.3.6       | 0.10.3       | 3.1.3？？   |      |
 | ```3.3.6``` | ```0.10.4``` | ```4.0.1``` |      |
 | 3.4.1       | 0.10.5       | 4.1.0       | +17  |
 | 3.4.1       | 0.10.5       | 4.2.0       | >=21 |
+
+官方口径：在 Apache 社区的讨论和相关 Bug 报告（如 RANGER-4950）中，开发者明确指出：如果坚持使用 Hive 3.1.3 + Hadoop 3.3.6，推荐的稳定组合是 Tez 0.10.3。
 
 ```javascript
 wget -c http://datacenter.local:8080/bigdata/jdk/jdk-8u461-linux-x64.tar.gz
@@ -20,6 +23,16 @@ wget -c http://datacenter.local:8080/bigdata/hadoop/hadoop-3.3.6.tar.gz
 wget -c http://datacenter.local:8080/bigdata/tez/apache-tez-0.10.4-bin.tar.gz
 wget -c http://datacenter.local:8080/bigdata/hive/apache-hive-4.0.1-bin.tar.gz
 wget -c http://datacenter.local:8080/bigdata/mysql/mysql-connector-j-8.0.33-1.el8.noarch.rpm
+
+
+wget -c https://repo.huaweicloud.com:8443/artifactory/java-local/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz
+wget -c https://archive.apache.org/dist/hadoop/common/hadoop-3.1.0/hadoop-3.1.0.tar.gz
+wget -c https://archive.apache.org/dist/tez/0.9.1/apache-tez-0.9.1-bin.tar.gz
+wget -c https://archive.apache.org/dist/hive/hive-3.1.3/apache-hive-3.1.3-bin.tar.gz
+wget -c https://mirrors.aliyun.com/mysql/Connector-J/mysql-connector-java-8.0.29-1.el8.noarch.rpm
+
+wget -c http://datacenter.local:8080/bigdata/tez/apache-tez-0.10.3-bin.tar.gz
+wget -c http://datacenter.local:8080/bigdata/hive/apache-hive-3.1.3-bin.tar.gz
 ```
 
 # Machine
@@ -146,6 +159,10 @@ export HADOOP_CLASSPATH=${TEZ_CONF_DIR}:${TEZ_JARS}/*:${TEZ_JARS}/lib/*:${HADOOP
     <property>
         <name>yarn.log-aggregation-enable</name>
         <value>true</value>
+    </property> 
+    <property>
+        <name>yarn.log.server.url</name>
+        <value>http://master:19888/jobhistory/logs</value>
     </property> 
      <property>
          <name>yarn.resourcemanager.hostname</name>

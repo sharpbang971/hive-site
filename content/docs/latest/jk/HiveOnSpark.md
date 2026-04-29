@@ -1,282 +1,21 @@
 ---
-title: "WSL : Hive on Tez"
-date: 2026-04-06
+title: "Hive : On Spark"
+date: 2026-04-12
 ---
 
-
-# WSL
-
-## 检查和安装
-### 查看已安装的发行版
-```javascript
-C:\Users\clive> wsl -l -v
-  NAME            STATE           VERSION
-* Ubuntu-24.04    Running         2
-```
-
-### 查看可安装的发行版
-```javascript
-
-C:\Users\clive>wsl -l -o
-以下是可安装的有效分发的列表。
-使用“wsl.exe --install <Distro>”安装。
-
-NAME                            FRIENDLY NAME
-Ubuntu                          Ubuntu
-Ubuntu-24.04                    Ubuntu 24.04 LTS
-Ubuntu-22.04                    Ubuntu 22.04 LTS
-Ubuntu-20.04                    Ubuntu 20.04 LTS
-openSUSE-Tumbleweed             openSUSE Tumbleweed
-openSUSE-Leap-16.0              openSUSE Leap 16.0
-SUSE-Linux-Enterprise-15-SP7    SUSE Linux Enterprise 15 SP7
-SUSE-Linux-Enterprise-16.0      SUSE Linux Enterprise 16.0
-kali-linux                      Kali Linux Rolling
-Debian                          Debian GNU/Linux
-AlmaLinux-8                     AlmaLinux OS 8
-AlmaLinux-9                     AlmaLinux OS 9
-AlmaLinux-Kitten-10             AlmaLinux OS Kitten 10
-AlmaLinux-10                    AlmaLinux OS 10
-archlinux                       Arch Linux
-FedoraLinux-43                  Fedora Linux 43
-FedoraLinux-42                  Fedora Linux 42
-eLxr                            eLxr 12.12.0.0 GNU/Linux
-OracleLinux_7_9                 Oracle Linux 7.9
-OracleLinux_8_10                Oracle Linux 8.10
-OracleLinux_9_5                 Oracle Linux 9.5
-openSUSE-Leap-15.6              openSUSE Leap 15.6
-SUSE-Linux-Enterprise-15-SP6    SUSE Linux Enterprise 15 SP6
-```
-### 安装特定版本
-```javascript
-    --install [Distro] [Options...]
-        安装适用于 Linux 的 Windows 子系统分发版。
-        有关有效分发版的列表，请使用 'wsl.exe --list --online'。
-
-        选项:
-            --enable-wsl1
-                启用 WSL1 支持。
-
-            --fixed-vhd
-                创建固定大小的磁盘来存储分发版。
-
-            --from-file <Path>
-                从本地文件安装分发版。
-
-            --legacy
-                使用旧分发版清单。
-
-            --location <Location>
-                设置分发版的安装路径。
-
-            --name <Name>
-                设置分发版的名称。
-
-            --no-distribution
-                仅安装所需的可选组件，不安装分发版。
-
-            --no-launch, -n
-                安装后不要启动分发版。
-
-            --version <Version>
-                指定要用于新分发的版本。
-
-            --vhd-size <MemoryString>
-                指定用于存储分发版的磁盘的大小。
-
-            --web-download
-                从 Internet 而不是 Microsoft Store 下载分发版。
-```
-#### example v0
-```javascript
-PS C:\Users\clive> wsl --install -d OracleLinux_8_10 --web-download
-wsl: 使用旧分发注册。请考虑改用基于 tar 的分发。
-正在下载: Oracle Linux 8.10
-[                           0.2%                           ]
-
-```
-#### example v1
-```javascript
-PS C:\Users\clive> wsl --install --name rocky8v2 --location D:\wsl\rocky8 --from-file D:\wsl\Rocky-8-Container-Base.latest.x86_64.tar.xz
-正在安装: D:\wsl\Rocky-8-Container-Base.latest.x86_64.tar.xz
-已成功安装分发。可以通过 “wsl.exe -d rocky8v2” 启动它====]
-正在启动 rocky8v2...
-[root@JINKENZHAO clive]# exit
-PS C:\Users\clive> wsl -l -v
-  NAME            STATE           VERSION
-* Ubuntu-24.04    Running         2
-  rocky8v2        Running         2
-  rocky8          Stopped         2
-```
-### 其他来源安装
-```javascript
-    --import <Distro> <InstallLocation> <FileName> [选项]
-        将指定的 tar 文件作为新分发版导入。
-        文件名可以是 - for stdin。
-
-        选项:
-            --version <Version>
-                指定要用于新分发的版本。
-
-            --vhd
-                指定所提供的文件是 .vhdx 文件，而不是 tar 文件。
-                此操作在指定的安装位置创建 .vhdx 文件的副本。
-```
-#### example v2
-```javascript
-
-PS C:\Users\clive> wsl --import rocky8v3 D:\wsl\rocky8v3 D:\wsl\Rocky-8-Container-Base.latest.x86_64.tar.xz
-操作成功完成。
-PS C:\Users\clive> wsl -l -v
-  NAME            STATE           VERSION
-* Ubuntu-24.04    Running         2
-  rocky8v2        Stopped         2
-  rocky8          Stopped         2
-  rocky8v3        Stopped         2
-```
-### 运行
-```javascript
-    --distribution, -d <DistroName>
-        运行指定的分发版。
-
-PS C:\Users\clive> wsl -l -v
-  NAME            STATE           VERSION
-* Ubuntu-24.04    Running         2
-  rocky8          Stopped         2
-PS C:\Users\clive> wsl -d rocky8
-[root@JINKENZHAO clive]# logout
-PS C:\Users\clive> wsl -d rocky8 --cd ~
-[root@JINKENZHAO ~]# logout
-PS C:\Users\clive> wsl -d rocky8 -u hadoop --cd ~
-<3>WSL (37 - Relay) ERROR: CreateProcessParseCommon:988: getpwnam(hadoop) failed 17
-找不到用户。
-错误代码: Wsl/WSL_E_USER_NOT_FOUND
-PS C:\Users\clive>        
-```
-
-## 关闭
-### 全局拉闸
-```javascript
-    --shutdown
-        立即终止所有正在运行的分发版和 WSL 2
-        轻型实用工具虚拟机。
-
-        选项:
-            --force
-                即使正在执行操作，也终止 WSL 2 虚拟机。可能导致数据丢失。
-```
-### 单台关机
-```javascript
---terminate, -t <Distro>
-        终止指定的分发版。
-```
-## WSL总结
-### WSL 常用命令分类表
-
-该表格将 WSL 命令分为**全局**（影响整个 WSL 环境）和**局部**（针对特定分发版）两大类，方便学习与查阅。
-
-
-| 分类 | 核心功能 | 常用命令示例 | 影响范围 |
-| :--- | :--- | :--- | :--- |
-| **全局 (Global)** | **状态查看** | `wsl --status` / `wsl --version` | 查看整体 WSL 运行状态和版本 |
-| | **平台更新** | `wsl --update` / `wsl --uninstall` | 升级或彻底卸载 WSL 引擎 |
-| | **全域关闭** | `wsl --shutdown` | **立即关闭所有** Linux 系统并释放内存 |
-| | **默认配置** | `wsl --set-default-version <1/2>` | 设定以后安装新系统时默认用的内核版本 |
-| | **全局挂载** | `wsl --mount` / `wsl --unmount` | 挂载物理/虚拟磁盘到**所有**系统中 |
-| | **在线查询** | `wsl --list --online` | 查看云端有哪些可供下载的 Linux 系统 |
-| **局部 (Local)** | **运行/进入** | `wsl -d <Distro>` / `wsl -u <User>` | 启动**特定**系统，或以**特定用户**登录 |
-| | **生命周期** | `wsl --install` / `wsl --unregister` | **安装**或**彻底销毁**某个具体的系统 |
-| | **启停管理** | `wsl --terminate <Distro>` | **强制关掉**指定的某一个 Linux 系统 |
-| | **导入导出** | `wsl --export` / `wsl --import` | 备份或从文件恢复**某个**特定系统 |
-| | **磁盘管理** | `wsl --manage <Distro> --move` | 移动**该系统**的存储位置或清理磁盘空间 |
-| | **版本转换** | `wsl --set-version <Distro> <1/2>` | 修改**这一个**系统的内核版本（1 或 2） |
-| | **默认指向** | `wsl --set-default <Distro>` | 设定当你只输入 `wsl` 时**默认进入哪一个** |
-
----
-*注：`<Distro>` 代表分发版名称（如 Ubuntu, rocky8v2），`<User>` 代表 Linux 用户名。*
-
-# RockyLinux
-
-## 安装
-- wsl -l -v
-```javascript
-PS C:\Users\clive> wsl -l -v
-  NAME            STATE           VERSION
-* Ubuntu-24.04    Running         2
-```
-- wsl --import rocky8  D:\wsl\rocky8 D:\wsl\Rocky-8-Container-Base.latest.x86_64.tar.xz
-```javascript
-PS C:\Users\clive> wsl --import rocky8  D:\wsl\rocky8 D:\wsl\Rocky-8-Container-Base.latest.x86_64.tar.xz
-操作成功完成。
-PS C:\Users\clive> wsl -l -v
-  NAME            STATE           VERSION
-* Ubuntu-24.04    Running         2
-  rocky8          Stopped         2
-PS C:\Users\clive> wsl -d rocky8
-[root@JINKENZHAO clive]#
-```
-
-## 配置
-### 镜像源
-```javascript
-sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-    -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.nju.edu.cn/rocky|g' \
-    -i.bak /etc/yum.repos.d/Rocky-*.repo
-
-dnf makecache
-dnf update -y
-```
-### WSL
-```javascript
-# cat /etc/wsl.conf 
-[boot]
-systemd=true
-
-[network]
-hostname = master
-generateHosts = true
-# cat /etc/hostname 
-master
-```
-
-## INIT
-```javascript
-dnf -y install sudo passwd openssh-server openssh-clients vim wget net-tools tar findutils procps-ng
-
-useradd -m -s /bin/bash jkren
-usermod -aG wheel jkren
-passwd jkren
-visudo /etc/sudoers
-jkren   ALL=(ALL)   NOPASSWD: ALL 
-```
-
-### Windows
-```javascript
-wsl --manage rocky8 --set-default-user jkren
-```
-
-# Hive on Tez
-
-| Hadoop      | TEZ          | Hive        | JDK  |
+# Version
+## 
+| Hadoop      | Spark          | Hive        | JDK  |
 | :---------- | :----------- | :---------- | :--- |
-| 3.1.0       | 0.9.1        | 3.1.3       |      |
-| 3.3.1       | 0.10.2       |             |      |
-| 3.3.6       | 0.10.4       | 3.1.3？？   |      |
-| ```3.3.6``` | ```0.10.4``` | ```4.0.1``` |      |
-| 3.4.1       | 0.10.5       | 4.1.0       | +17  |
-| 3.4.1       | 0.10.5       | 4.2.0       | >=21 |
+| ```3.3.4``` | ```3.3.4``` | ```3.1.3``` |      |
+
+官方口径：在 Apache 社区的讨论和相关 Bug 报告（如 RANGER-4950）中，开发者明确指出：如果坚持使用 Hive 3.1.3 + Hadoop 3.3.6，推荐的稳定组合是 Tez 0.10.3。
 
 ```javascript
 wget -c http://datacenter.local:8080/bigdata/jdk/jdk-8u461-linux-x64.tar.gz
-wget -c http://datacenter.local:8080/bigdata/hadoop/hadoop-3.3.6.tar.gz
-wget -c http://datacenter.local:8080/bigdata/tez/apache-tez-0.10.4-bin.tar.gz
-wget -c http://datacenter.local:8080/bigdata/hive/apache-hive-4.0.1-bin.tar.gz
-wget -c http://datacenter.local:8080/bigdata/mysql/mysql-connector-j-8.0.33-1.el8.noarch.rpm
-
-wget -c https://repo.huaweicloud.com:8443/artifactory/java-local/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz
-wget -c https://mirrors.nju.edu.cn/apache/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
-wget -c https://mirrors.nju.edu.cn/apache/tez/0.10.4/apache-tez-0.10.4-bin.tar.gz
-wget -c https://archive.apache.org/dist/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz
-wget -c https://mirrors.aliyun.com/mysql/Connector-J/mysql-connector-java-8.0.29-1.el8.noarch.rpm
+wget -c http://datacenter.local:8080/bigdata/hadoop/hadoop-3.3.4.tar.gz
+wget -c http://datacenter.local:8080/bigdata/spark/spark-3.3.4-bin-without-hadoop.tgz
+wget -c http://datacenter.local:8080/bigdata/hive/apache-hive-3.1.3-bin.tar.gz
 ```
 
 # Machine
@@ -406,8 +145,7 @@ export HADOOP_CLASSPATH=${TEZ_CONF_DIR}:${TEZ_JARS}/*:${TEZ_JARS}/lib/*:${HADOOP
     </property> 
     <property>
         <name>yarn.log.server.url</name>
-        <!-- 这里指向你的 JobHistory Server 地址 -->
-    	<value>http://master:19888/jobhistory/logs</value>
+        <value>http://master:19888/jobhistory/logs</value>
     </property> 
      <property>
          <name>yarn.resourcemanager.hostname</name>
@@ -466,18 +204,14 @@ worker2
 3118 Jps
 2543 DataNode
 ```
-```javascript
-http://master:9870/
-http://master:8088/
-```
 
 ## Example
 ```javascript
-[jkren@master hadoop]$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar pi 10 1000
+[jkren@master hadoop]$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar pi 10 1000
 
 [jkren@master hadoop]$ hdfs dfs -mkdir input
 [jkren@master hadoop]$ hdfs dfs -put etc/hadoop/*.xml input
-[jkren@master hadoop]$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar grep input output 'dfs[a-z.]+'
+[jkren@master hadoop]$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar grep input output 'dfs[a-z.]+'
 ```
 
 # MySQL
